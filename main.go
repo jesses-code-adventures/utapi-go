@@ -12,7 +12,23 @@ import (
 	"strings"
 )
 
-// Populates the local environment with variables from .env file
+type uploadthingConfig struct {
+	Host    string
+	ApiKey  string
+	Version string
+}
+
+type fileKeysPayload struct {
+	FileKeys []string `json:"fileKeys"`
+}
+
+type uploadthingHeaders struct {
+	ContentType  string
+	ApiKey       string
+	SdkVersion   string
+	CacheControl string
+}
+
 func setEnvironmentVariablesFromFile() error {
 	return godotenv.Load(".env")
 }
@@ -35,12 +51,6 @@ func validateEnvironmentVariables(keys []string) error {
 	return nil
 }
 
-type uploadthingConfig struct {
-	Host    string
-	ApiKey  string
-	Version string
-}
-
 func getUploadthingConfig() (*uploadthingConfig, error) {
 	err := handleSetEnvironmentVariables()
 	if err != nil {
@@ -53,14 +63,7 @@ func getUploadthingConfig() (*uploadthingConfig, error) {
 	return &uploadthingConfig{Host: "https://uploadthing.com", ApiKey: os.Getenv("UPLOADTHING_SECRET"), Version: "6.2.0"}, nil
 }
 
-type uploadthingHeaders struct {
-	ContentType  string
-	ApiKey       string
-	SdkVersion   string
-	CacheControl string
-}
-
-func getDefaultUploadthingHeaders(apiKey string, version string) *uploadthingHeaders {
+func getUploadthingHeaders(apiKey string, version string) *uploadthingHeaders {
 	return &uploadthingHeaders{ContentType: "application/json", ApiKey: apiKey, SdkVersion: version, CacheControl: "no-store"}
 }
 
@@ -75,24 +78,8 @@ func getUploadthingUrl(pathname string, host string) string {
 	return url
 }
 
-type UtApi struct {
-	config *uploadthingConfig
-}
-
-func NewUtApi() (*UtApi, error) {
-	config, err := getUploadthingConfig()
-	if err != nil {
-		return nil, err
-	}
-	return &UtApi{config: config}, nil
-}
-
 func getDebugMessage(url string, headers *uploadthingHeaders, body *bytes.Buffer) string {
 	return fmt.Sprintf("url: %s, headers: %s, body: %s", url, headers, body.String())
-}
-
-type fileKeysPayload struct {
-	FileKeys []string `json:"fileKeys"`
 }
 
 func setHeaders(req *http.Request, headers *uploadthingHeaders) {
@@ -102,16 +89,28 @@ func setHeaders(req *http.Request, headers *uploadthingHeaders) {
 	req.Header.Set("Cache-Control", "no-store")
 }
 
+type UtApi struct {
+	config     *uploadthingConfig
+	httpClient *http.Client
+}
+
+func NewUtApi() (*UtApi, error) {
+	config, err := getUploadthingConfig()
+	if err != nil {
+		return nil, err
+	}
+	return &UtApi{config: config, httpClient: &http.Client{}}, nil
+}
+
 func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.Response, error) {
 	url := getUploadthingUrl(pathname, ut.config.Host)
 	req, err := http.NewRequest(http.MethodPost, url, body)
 	if err != nil {
 		return nil, err
 	}
-	headers := getDefaultUploadthingHeaders(ut.config.ApiKey, ut.config.Version)
+	headers := getUploadthingHeaders(ut.config.ApiKey, ut.config.Version)
 	setHeaders(req, headers)
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := ut.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -125,24 +124,19 @@ func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.
 			return nil, fmt.Errorf("failed to delete files, status code: %d, req: %s", resp.StatusCode, getDebugMessage(url, headers, body))
 		}
 	}
-	responseBytes, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(string(responseBytes))
 	return resp, nil
 }
 
-func (ut *UtApi) DeleteFiles(ids []string) error {
+func (ut *UtApi) DeleteFiles(ids []string) (*http.Response, error) {
 	payload := fileKeysPayload{FileKeys: ids}
 	idsJson, err := json.Marshal(payload)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	body := bytes.NewBuffer(idsJson)
-	_, err = ut.requestUploadthing("/api/deleteFile", body)
+    response, err := ut.requestUploadthing("/api/deleteFile", body)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return response, nil
 }
