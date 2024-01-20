@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func ValidateEnvironmentVariables(keys []string) error {
+func validateEnvironmentVariables(keys []string) error {
 	for _, key := range keys {
 		if os.Getenv(key) == "" {
 			return errors.New(fmt.Sprintf("%s not set", key))
@@ -20,29 +20,29 @@ func ValidateEnvironmentVariables(keys []string) error {
 	return nil
 }
 
-type UploadthingConfig struct {
+type uploadthingConfig struct {
 	Host    string
 	ApiKey  string
 	Version string
 }
 
-func getUploadthingConfig() (*UploadthingConfig, error) {
-	err := ValidateEnvironmentVariables([]string{"UPLOADTHING_SECRET"})
+func getUploadthingConfig() (*uploadthingConfig, error) {
+	err := validateEnvironmentVariables([]string{"UPLOADTHING_SECRET"})
 	if err != nil {
 		return nil, err
 	}
-	return &UploadthingConfig{Host: "https://uploadthing.com", ApiKey: os.Getenv("UPLOADTHING_SECRET"), Version: "6.2.0"}, nil
+	return &uploadthingConfig{Host: "https://uploadthing.com", ApiKey: os.Getenv("UPLOADTHING_SECRET"), Version: "6.2.0"}, nil
 }
 
-type UploadthingHeaders struct {
+type uploadthingHeaders struct {
 	ContentType  string
 	ApiKey       string
 	SdkVersion   string
 	CacheControl string
 }
 
-func getDefaultUploadthingHeaders(apiKey string, version string) *UploadthingHeaders {
-	return &UploadthingHeaders{ContentType: "application/json", ApiKey: apiKey, SdkVersion: version, CacheControl: "no-store"}
+func getDefaultUploadthingHeaders(apiKey string, version string) *uploadthingHeaders {
+	return &uploadthingHeaders{ContentType: "application/json", ApiKey: apiKey, SdkVersion: version, CacheControl: "no-store"}
 }
 
 func getUploadthingUrl(pathname string, host string) string {
@@ -57,7 +57,7 @@ func getUploadthingUrl(pathname string, host string) string {
 }
 
 type UtApi struct {
-	config *UploadthingConfig
+	config *uploadthingConfig
 }
 
 func NewUtApi() (*UtApi, error) {
@@ -68,36 +68,35 @@ func NewUtApi() (*UtApi, error) {
 	return &UtApi{config: config}, nil
 }
 
-func getDebugMessage(url string, headers *UploadthingHeaders, body *bytes.Buffer) string {
+func getDebugMessage(url string, headers *uploadthingHeaders, body *bytes.Buffer) string {
 	return fmt.Sprintf("url: %s, headers: %s, body: %s", url, headers, body.String())
 }
 
-type FileKeysPayload struct {
+type fileKeysPayload struct {
 	FileKeys []string `json:"fileKeys"`
 }
 
-func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.Response, error) {
-	url := getUploadthingUrl(pathname, ut.config.Host)
-	headers := getDefaultUploadthingHeaders(ut.config.ApiKey, ut.config.Version)
-	req, err := http.NewRequest(http.MethodPost, url, body)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set headers
+func setHeaders(req *http.Request, headers *uploadthingHeaders) {
 	req.Header.Set("Content-Type", headers.ContentType)
 	req.Header.Set("x-uploadthing-api-key", headers.ApiKey)
 	req.Header.Set("x-uploadthing-version", headers.SdkVersion)
 	req.Header.Set("Cache-Control", "no-store")
+}
 
-	// Create client and send request
+func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.Response, error) {
+	url := getUploadthingUrl(pathname, ut.config.Host)
+	req, err := http.NewRequest(http.MethodPost, url, body)
+	if err != nil {
+		return nil, err
+	}
+	headers := getDefaultUploadthingHeaders(ut.config.ApiKey, ut.config.Version)
+    setHeaders(req, headers)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
-
 	if resp.StatusCode != http.StatusOK {
 		resp_body := bytes.NewBuffer([]byte{})
 		_, err := io.Copy(resp_body, resp.Body)
@@ -107,18 +106,16 @@ func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.
 			return nil, fmt.Errorf("failed to delete files, status code: %d, req: %s", resp.StatusCode, getDebugMessage(url, headers, body))
 		}
 	}
-
 	responseBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
 	fmt.Println(string(responseBytes))
-
 	return resp, nil
 }
 
-func (ut *UtApi) DeleteUploadthingFiles(ids []string) error {
-	payload := FileKeysPayload{FileKeys: ids}
+func (ut *UtApi) DeleteFiles(ids []string) error {
+	payload := fileKeysPayload{FileKeys: ids}
 	idsJson, err := json.Marshal(payload)
 	if err != nil {
 		return err

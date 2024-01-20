@@ -40,7 +40,7 @@ func main(key string, s *Server) bool {
     // Example - deleting a file
     // This is the key returned by uploadthing when you create a file
     key = []string{"fc8d296b-20f6-4173-bfa5-5d6c32fc9f6b-geat9r.csv"}
-    err = utApi.DeleteUploadthingFiles([]string{key})
+    err = utApi.DeleteFiles([]string{key})
     if err != nil {
         fmt.Println("Error deleting file")
     } else {
