@@ -2,11 +2,11 @@
 
 I made this package because I needed the functionality of deleting files, so that's what's implemented right now.
 
-While I plan to add the rest of the uploadthing api's functionality, it's not a priority of mine currently. You are more than welcome though!
+While I plan to add the rest of the Uploadthing api's functionality, it's not a priority of mine currently. You are more than welcome though!
 
 ## scope
 
-This package should do nothing more than the UTApi class in [Uploadthing](https://github.com/pingdotgg/uploadthing)
+This package should do nothing more than the [UTApi class in Uploadthing](https://github.com/pingdotgg/uploadthing/blob/main/packages/uploadthing/src/sdk/index.ts#L39)
 
 ## dev setup
 
