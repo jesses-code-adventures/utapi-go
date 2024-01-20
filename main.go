@@ -134,7 +134,7 @@ func (ut *UtApi) DeleteFiles(ids []string) (*http.Response, error) {
 		return nil, err
 	}
 	body := bytes.NewBuffer(idsJson)
-    response, err := ut.requestUploadthing("/api/deleteFile", body)
+	response, err := ut.requestUploadthing("/api/deleteFile", body)
 	if err != nil {
 		return nil, err
 	}
