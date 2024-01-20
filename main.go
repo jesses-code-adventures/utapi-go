@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/joho/godotenv"
 	"io"
 	"net/http"
 	"os"
 	"strings"
-    "github.com/joho/godotenv"
 )
 
 // Populates the local environment with variables from .env file
@@ -17,17 +17,14 @@ func setEnvironmentVariablesFromFile() error {
 	return godotenv.Load(".env")
 }
 
-
 func handleSetEnvironmentVariables() error {
 	err := setEnvironmentVariablesFromFile()
 	if err != nil {
 		fmt.Printf("Couldn't set environment variables from file")
-        return err
+		return err
 	}
-    return nil
+	return nil
 }
-
-
 
 func validateEnvironmentVariables(keys []string) error {
 	for _, key := range keys {
@@ -45,10 +42,10 @@ type uploadthingConfig struct {
 }
 
 func getUploadthingConfig() (*uploadthingConfig, error) {
-    err := handleSetEnvironmentVariables()
-    if err != nil {
-        return nil, err
-    }
+	err := handleSetEnvironmentVariables()
+	if err != nil {
+		return nil, err
+	}
 	err = validateEnvironmentVariables([]string{"UPLOADTHING_SECRET"})
 	if err != nil {
 		return nil, err
@@ -112,7 +109,7 @@ func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.
 		return nil, err
 	}
 	headers := getDefaultUploadthingHeaders(ut.config.ApiKey, ut.config.Version)
-    setHeaders(req, headers)
+	setHeaders(req, headers)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
