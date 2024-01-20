@@ -8,6 +8,16 @@ While I plan to add the rest of the Uploadthing api's functionality, it's not a 
 
 This package should do nothing more than the [UTApi class in Uploadthing](https://github.com/pingdotgg/uploadthing/blob/main/packages/uploadthing/src/sdk/index.ts#L39)
 
+## to do
+
+- [x] requestUploadThing
+- [x] deleteFiles
+- [ ] getFileUrls
+- [ ] listFiles
+- [ ] renameFiles
+- [ ] getSignedURL
+- [ ] getUsageInfo
+
 ## dev setup
 
 1. If you'd like to add a feature, first clone the [Uploadthing](https://github.com/pingdotgg/uploadthing) repo and find its current implementation.
