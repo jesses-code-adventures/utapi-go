@@ -9,7 +9,25 @@ import (
 	"net/http"
 	"os"
 	"strings"
+    "github.com/joho/godotenv"
 )
+
+// Populates the local environment with variables from .env file
+func setEnvironmentVariablesFromFile() error {
+	return godotenv.Load(".env")
+}
+
+
+func handleSetEnvironmentVariables() error {
+	err := setEnvironmentVariablesFromFile()
+	if err != nil {
+		fmt.Printf("Couldn't set environment variables from file")
+        return err
+	}
+    return nil
+}
+
+
 
 func validateEnvironmentVariables(keys []string) error {
 	for _, key := range keys {
@@ -27,7 +45,11 @@ type uploadthingConfig struct {
 }
 
 func getUploadthingConfig() (*uploadthingConfig, error) {
-	err := validateEnvironmentVariables([]string{"UPLOADTHING_SECRET"})
+    err := handleSetEnvironmentVariables()
+    if err != nil {
+        return nil, err
+    }
+	err = validateEnvironmentVariables([]string{"UPLOADTHING_SECRET"})
 	if err != nil {
 		return nil, err
 	}
