@@ -1,0 +1,7 @@
+.env
+scripts/
+utapi-go
+tmp/
+tmp/*
+*.log
+
