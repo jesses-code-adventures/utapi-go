@@ -34,6 +34,8 @@ func main() {
     // Create api handler
     utApi, err := utapi.NewUtApi()
     if err != nil {
+        fmt.Println("Error creating uploadthing api handler")
+        fmt.Println(fmt.Errorf("%s", err))
         os.Exit(1)
     }
 
@@ -42,7 +44,8 @@ func main() {
     keys := []string{"fc8d296b-20f6-4173-bfa5-5d6c32fc9f6b-geat9r.csv"}
     err = utApi.DeleteFiles(keys)
     if err != nil {
-        fmt.Println("Error deleting file")
+        fmt.Println("Error deleting files")
+        fmt.Println(fmt.Errorf("%s", err))
     } else {
         fmt.Println("Successfully deleted file")
     }
