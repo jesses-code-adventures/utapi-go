@@ -12,39 +12,6 @@ import (
 	"strings"
 )
 
-// Utility types
-type uploadthingFileStatus int
-
-const (
-	DeletionPending uploadthingFileStatus = iota
-	Failed
-	Uploaded
-	Uploading
-)
-
-func createUploadthingFileStatus(status string) uploadthingFileStatus {
-	switch status {
-	case "Deletion Pending":
-		return DeletionPending
-	case "Failed":
-		return Failed
-	case "Uploaded":
-		return Uploaded
-	case "Uploading":
-		return Uploading
-	default:
-		return Failed
-	}
-}
-
-func (s uploadthingFileStatus) String() string {
-	return [...]string{"Deletion Pending", "Failed", "Uploaded", "Uploading"}[s]
-}
-
-func (s uploadthingFileStatus) MarshalJSON() ([]byte, error) {
-	return json.Marshal(s.String())
-}
-
 // Types for the uploadthing api to consume
 
 type uploadthingConfig struct {
@@ -113,6 +80,39 @@ func parseDeleteFileResponse(resp *http.Response) (DeleteFileResponse, error) {
 	return response, nil
 }
 
+// Status enum
+type uploadthingFileStatus int
+
+const (
+	DeletionPending uploadthingFileStatus = iota
+	Failed
+	Uploaded
+	Uploading
+)
+
+func createUploadthingFileStatus(status string) uploadthingFileStatus {
+	switch status {
+	case "Deletion Pending":
+		return DeletionPending
+	case "Failed":
+		return Failed
+	case "Uploaded":
+		return Uploaded
+	case "Uploading":
+		return Uploading
+	default:
+		return Failed
+	}
+}
+
+func (s uploadthingFileStatus) String() string {
+	return [...]string{"Deletion Pending", "Failed", "Uploaded", "Uploading"}[s]
+}
+
+func (s uploadthingFileStatus) MarshalJSON() ([]byte, error) {
+	return json.Marshal(s.String())
+}
+
 // Represents a single uploadthing file
 type uploadthingFile struct {
 	Key    string                `json:"key"`
@@ -130,7 +130,6 @@ func parseUploadthingFileResponse(resp *http.Response) (UploadthingFileResponse,
 		return UploadthingFileResponse{}, fmt.Errorf("response is nil")
 	}
 	defer resp.Body.Close()
-	fmt.Println(resp.Body)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return UploadthingFileResponse{}, fmt.Errorf("error reading response body: %v", err)
@@ -363,7 +362,6 @@ func (ut *UtApi) GetFileUrls(fileKeys []string) (*UploadthingUrlsResponse, error
 		return nil, err
 	}
 	body := bytes.NewBuffer(fileKeysJson)
-    fmt.Println(body)
 	utResponse, err := ut.requestUploadthing("/api/getFileUrl", body)
 	if err != nil {
 		return nil, err
