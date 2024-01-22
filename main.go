@@ -199,6 +199,10 @@ func parseUploadthingUsageInfoResponse(resp *http.Response) (UploadthingUsageInf
 	return response, nil
 }
 
+func (u *UploadthingUsageInfo) AsString() string {
+    return fmt.Sprintf("Total Bytes: %d\nTotal Readable: %s\nApp Total Bytes: %f\nApp Total Readable: %s\nFiles Uploaded: %d\nLimit Bytes: %f\nLimit Readable: %s", u.TotalBytes, u.TotalReadable, u.AppTotalBytes, u.AppTotalReadable, u.FilesUploaded, u.LimitBytes, u.LimitReadable)
+}
+
 // Represents a full response struct for a presigned url
 type PresignedUrlResponse struct {
 	Url string `json:"url"`
