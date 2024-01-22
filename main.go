@@ -64,7 +64,7 @@ type fileKeysPayload struct {
 	FileKeys []string `json:"fileKeys"`
 }
 
-type singleFileRename struct {
+type SingleFileRename struct {
 	FileKey string `json:"fileKey"`
 	NewName string `json:"newName"`
 }
@@ -77,7 +77,7 @@ type ListFilesOpts struct {
 
 // Arguments for the rename files endpoint
 type RenameFilesOpts struct {
-	Files []singleFileRename `json:"files"`
+	Files []SingleFileRename `json:"files"`
 }
 
 // Arguments for the presigned url endpoint
