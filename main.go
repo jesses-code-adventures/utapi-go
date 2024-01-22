@@ -151,7 +151,7 @@ type UploadthingUrl struct {
 
 // Represents a full response struct for a list of urls
 type UploadthingUrlsResponse struct {
-	Urls []UploadthingUrl `json:"urls"`
+    Data []UploadthingUrl `json:"data"`
 }
 
 func parseUploadthingUrlsResponse(resp *http.Response) (UploadthingUrlsResponse, error) {
@@ -328,9 +328,9 @@ func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.
 		resp_body := bytes.NewBuffer([]byte{})
 		_, err := io.Copy(resp_body, resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("failed to delete files, status code: %d, body: %s, req: %s", resp.StatusCode, resp_body, getDebugMessage(url, headers, body))
+			return nil, fmt.Errorf("uploadthing request failed, status code: %d, body: %s, req: %s", resp.StatusCode, resp_body, getDebugMessage(url, headers, body))
 		} else {
-			return nil, fmt.Errorf("failed to delete files, status code: %d, req: %s", resp.StatusCode, getDebugMessage(url, headers, body))
+			return nil, fmt.Errorf("uploadthing request failed, status code: %d, req: %s", resp.StatusCode, getDebugMessage(url, headers, body))
 		}
 	}
 	return resp, nil
@@ -358,6 +358,8 @@ func (ut *UtApi) DeleteFiles(ids []string) (*DeleteFileResponse, error) {
 // Given an array of file keys, get the corresponding urls.
 func (ut *UtApi) GetFileUrls(fileKeys []string) (*UploadthingUrlsResponse, error) {
 	payload := fileKeysPayload{FileKeys: fileKeys}
+    fmt.Println("payload")
+    fmt.Println(payload)
 	idsJson, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
