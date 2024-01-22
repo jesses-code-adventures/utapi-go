@@ -130,6 +130,7 @@ func parseUploadthingFileResponse(resp *http.Response) (UploadthingFileResponse,
 		return UploadthingFileResponse{}, fmt.Errorf("response is nil")
 	}
 	defer resp.Body.Close()
+    fmt.Println(resp.Body)
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return UploadthingFileResponse{}, fmt.Errorf("error reading response body: %v", err)
@@ -319,7 +320,6 @@ func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		resp_body := bytes.NewBuffer([]byte{})
 		_, err := io.Copy(resp_body, resp.Body)
