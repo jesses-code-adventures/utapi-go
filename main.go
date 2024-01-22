@@ -337,13 +337,13 @@ func (ut *UtApi) requestUploadthing(pathname string, body *bytes.Buffer) (*http.
 }
 
 // Delete files from uploadthing.
-func (ut *UtApi) DeleteFiles(ids []string) (*DeleteFileResponse, error) {
-	payload := fileKeysPayload{FileKeys: ids}
-	idsJson, err := json.Marshal(payload)
+func (ut *UtApi) DeleteFiles(fileKeys []string) (*DeleteFileResponse, error) {
+	payload := fileKeysPayload{FileKeys: fileKeys}
+	fileKeysJson, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
-	body := bytes.NewBuffer(idsJson)
+	body := bytes.NewBuffer(fileKeysJson)
 	utResponse, err := ut.requestUploadthing("/api/deleteFile", body)
 	if err != nil {
 		return nil, err
@@ -358,13 +358,12 @@ func (ut *UtApi) DeleteFiles(ids []string) (*DeleteFileResponse, error) {
 // Given an array of file keys, get the corresponding urls.
 func (ut *UtApi) GetFileUrls(fileKeys []string) (*UploadthingUrlsResponse, error) {
 	payload := fileKeysPayload{FileKeys: fileKeys}
-    fmt.Println("payload")
-    fmt.Println(payload)
-	idsJson, err := json.Marshal(payload)
+	fileKeysJson, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
 	}
-	body := bytes.NewBuffer(idsJson)
+	body := bytes.NewBuffer(fileKeysJson)
+    fmt.Println(body)
 	utResponse, err := ut.requestUploadthing("/api/getFileUrl", body)
 	if err != nil {
 		return nil, err
