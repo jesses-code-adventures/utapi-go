@@ -77,7 +77,7 @@ type ListFilesOpts struct {
 
 // Arguments for the rename files endpoint
 type RenameFilesOpts struct {
-	Files []SingleFileRename `json:"files"`
+	Updates []SingleFileRename `json:"updates"`
 }
 
 // Arguments for the presigned url endpoint
@@ -401,7 +401,6 @@ func (ut *UtApi) RenameFiles(files RenameFilesOpts) error {
 	if err != nil {
 		return err
 	}
-    fmt.Println(string(optsJson))
 	body := bytes.NewBuffer(optsJson)
 	_, err = ut.requestUploadthing("/api/renameFiles", body)
 	if err != nil {
