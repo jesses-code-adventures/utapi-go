@@ -401,6 +401,7 @@ func (ut *UtApi) RenameFiles(files RenameFilesOpts) error {
 	if err != nil {
 		return err
 	}
+    fmt.Println(string(optsJson))
 	body := bytes.NewBuffer(optsJson)
 	_, err = ut.requestUploadthing("/api/renameFiles", body)
 	if err != nil {
