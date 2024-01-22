@@ -7,7 +7,7 @@ Note: Currently incomplete as I have only implemented what I need so far. If you
 
 ## why?
 
-You have uploaded a large file to uploadthing and you'd like to process all that data in go rather than typescript.
+You have uploaded a large file to uploadthing and you'd like to process that big boy in go.
 
 ## setup
 
@@ -42,13 +42,14 @@ func main() {
     // Example - deleting a file
     // This is the key returned by uploadthing when you create a file
     keys := []string{"fc8d296b-20f6-4173-bfa5-5d6c32fc9f6b-geat9r.csv"}
-    err = utApi.DeleteFiles(keys)
-    if err != nil {
-        fmt.Println("Error deleting files")
-        fmt.Println(fmt.Errorf("%s", err))
-    } else {
-        fmt.Println("Successfully deleted file")
-    }
+	resp, err := utApi.DeleteFiles(keys)
+	if err != nil {
+		fmt.Println("Error deleting files")
+		fmt.Println(fmt.Errorf("%s", err))
+	} else {
+		fmt.Println("Successfully deleted file")
+		fmt.Println(resp.Success)
+	}
 }
 ```
 
