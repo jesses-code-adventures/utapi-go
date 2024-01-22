@@ -1,26 +1,26 @@
 # contributing
 
-I made this package because I needed the functionality of deleting files, so that's what's implemented right now.
+Currently this package has parity with the [UTApi class in Uploadthing](https://github.com/pingdotgg/uploadthing/blob/main/packages/uploadthing/src/sdk/index.ts#L39), so this package doesn't require new features.
 
-While I plan to add the rest of the Uploadthing api's functionality, it's not a priority of mine currently. You are more than welcome though!
+If you have modifications you'd like to make to the code for cleanliness or other improvements, I'd recommend getting in touch before making the changes.
 
 ## scope
 
 This package should do nothing more than the [UTApi class in Uploadthing](https://github.com/pingdotgg/uploadthing/blob/main/packages/uploadthing/src/sdk/index.ts#L39)
 
-## to do
+## utapi features
 
 - [x] requestUploadThing
 - [x] deleteFiles
-- [ ] getFileUrls
-- [ ] listFiles
-- [ ] renameFiles
-- [ ] getSignedURL
-- [ ] getUsageInfo
+- [x] getFileUrls
+- [x] listFiles
+- [x] renameFiles
+- [x] getSignedURL
+- [x] getUsageInfo
 
 ## dev setup
 
-1. If you'd like to add a feature, first clone the [Uploadthing](https://github.com/pingdotgg/uploadthing) repo and find its current implementation.
+1. If you'd like to make a change, first clone the [Uploadthing](https://github.com/pingdotgg/uploadthing) repo and find the original function you plan to modify.
 
     ```bash
     git clone --depth 1 https://github.com/pingdotgg/uploadthing uploadthing_source;
