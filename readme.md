@@ -2,7 +2,7 @@
 
 A thin wrapper for the uploadthing api.
 
-Note: Currently incomplete as I have only implemented what I need so far. If you'd like to add something you need, feel free to contribute in line with [contributing.md](contributing.md).
+If you'd like to add something you need, feel free to contribute in line with [contributing.md](contributing.md).
 
 
 ## why?
